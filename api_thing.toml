@@ -258,14 +258,3 @@ __all__ = [
     "API_MODEL",
     "APIError",
 ]
-
-
-# small CLI for manual testing
-if __name__ == "__main__":
-    print("api-ai shim. Demonstrating usage...\n")
-    API_PROVIDER("local")
-    API_MODEL(model="demo-summarizer")
-    API.note("You are a demo assistant.")
-    res = API.process("text", "This is a long piece of text that should be summarized by the demo model.\nIt continues for a while.")
-    API.print(res)
-    print("done")
