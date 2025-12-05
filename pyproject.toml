@@ -9,7 +9,7 @@ description = "A tiny pure-Python DSL-style wrapper for AI providers."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { file = "LICENSE" }
-authors = [{ name = "PythonKnower", email = "None" }]
+authors = [{ name = "PythonKnower", email = "den455545@gmail.com" }]
 keywords = ["ai", "dsl", "wrapper"]
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -24,7 +24,7 @@ dependencies = []
 [project.urls]
 Homepage = "https://github.com/PythonKnower/api-ai"
 Repository = "https://github.com/PythonKnower/api-ai"
-"Bug Tracker" = "https://github.com/PythonKnower/api-ai/issues"
+Bug Tracker = "https://github.com/PythonKnower/api-ai/issues"
 
 [tool.setuptools]
 packages = ["api_ai"]
