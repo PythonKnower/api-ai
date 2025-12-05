@@ -28,5 +28,5 @@ Bug Tracker = "https://github.com/PythonKnower/api-ai/issues"
 
 [tool.setuptools]
 packages = ["api_ai"]
-include-package-data = true
-zip-safe = false
+"include-package-data" = true
+"zip-safe" = false
