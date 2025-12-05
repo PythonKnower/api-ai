@@ -1,1 +1,36 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
 
+[project]
+name = "api-ai"
+version = "0.2.0"
+description = "A tiny pure-Python DSL-style wrapper for working with AI providers."
+readme = "README.md"
+requires-python = ">=3.14.0"
+license = { file = "LICENSE" }
+authors = [
+    { name = "PythonKnower", email = "None" }
+]
+keywords = ["ai", "dsl", "wrapper", "simulator", "local"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Software Development :: Libraries",
+]
+
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/PythonKnower/api-ai"
+Documentation = "https://github.com/PythonKnower/api-ai#readme"
+Repository = "https://github.com/PythonKnower/api-ai"
+Bug Tracker = "https://github.com/PythonKnower/api-ai/issues"
+
+[tool.setuptools]
+packages = ["api_ai"]
+include-package-data = true
+zip-safe = false
