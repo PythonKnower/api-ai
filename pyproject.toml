@@ -24,7 +24,7 @@ dependencies = []
 [project.urls]
 Homepage = "https://github.com/PythonKnower/api-ai"
 Repository = "https://github.com/PythonKnower/api-ai"
-Bug Tracker = "https://github.com/PythonKnower/api-ai/issues"
+"Bug Tracker" = "https://github.com/PythonKnower/api-ai/issues"
 
 [tool.setuptools]
 packages = ["api_ai"]
