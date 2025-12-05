@@ -7,7 +7,7 @@ name = "api-ai"
 version = "0.2.0"
 description = "A tiny pure-Python DSL-style wrapper for working with AI providers."
 readme = "README.md"
-requires-python = ">=3.14.0"
+requires-python = ">=3.10"
 license = { file = "LICENSE" }
 authors = [
     { name = "PythonKnower", email = "None" }
