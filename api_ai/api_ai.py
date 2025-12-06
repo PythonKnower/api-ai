@@ -4,7 +4,7 @@ A tiny pure-Python DSL-style wrapper for working with AI providers.
 This module exposes a simple, stateful API object via top-level helper
 functions so you can write scripts with a compact syntax like:
 
-    from api_ai import API_PROVIDER, API_KEY, API_MODEL, API
+    from api_ai import API_PROVIDER, API_KEY, API_MODEL, API, API_TEMP
 
     API_PROVIDER(Claude/OpenAI/Google/xAI)
     API_KEY("API_KEY_HERE")
@@ -12,6 +12,8 @@ functions so you can write scripts with a compact syntax like:
     API.note("Type your note here to let the AI use it..")
     resp = API.process() 
     API.print(resp)
+    API.temp()
+    API.set_temp
 
 Important: this is a pure-Python local shim and does not contact external
 services. It provides a consistent interface and simple simulation hooks
