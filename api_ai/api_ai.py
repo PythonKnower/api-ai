@@ -10,7 +10,7 @@ functions so you can write scripts with a compact syntax like:
     API_KEY("API_KEY_HERE")
     API_MODEL("model")
     API.note("Type your note here to let the AI use it..")
-    resp = API.process()
+    resp = API.process() 
     API.print(resp)
 
 Important: this is a pure-Python local shim and does not contact external
@@ -38,6 +38,7 @@ class APIClient:
     notes: List[str] = field(default_factory=list)
     memory: List[str] = field(default_factory=list)
     last_response: Any = None
+    temperature_value: float = 1.0  # default 1.0
 
     def set_provider(self, provider: str):
         self.provider = provider
@@ -51,69 +52,55 @@ class APIClient:
         self.model = model
         return self
 
-    def fail(self, template: str, e: Optional[Exception] = None, when: str = "after"):
-        """Record an error message and raise APIError.
+    def set_temp(self, temp: float):
+        """Set generation temperature. Must be between 0.1 and 2."""
+        if not (0.1 <= temp <= 2):
+            raise APIError("Temperature must be >=0.1 and <=2")
+        self.temperature_value = temp
+        return self.temperature_value
 
-        template can include '{e}' which will be replaced by the exception
-        message. The `when` argument is informational ("before", "after").
-        """
+    def temp(self):
+        """Get current temperature value."""
+        return self.temperature_value
+
+    def fail(self, template: str, e: Optional[Exception] = None, when: str = "after"):
         emsg = str(e) if e is not None else "<no-exception>"
         message = template.replace("{e}", emsg)
-        # attach timing and provider info
         full = f"[API.fail when={when} provider={self.provider} model={self.model}] {message}"
-        # store in memory/notes for diagnostics
         self.memory.append(full)
-        # raise a typed error so callers can catch
         raise APIError(full)
 
     def print(self, response: Any):
-        """Pretty-print a response and remember it as last_response."""
         self.last_response = response
-        # if it's a dict-like structure, pretty print JSON
         try:
             if isinstance(response, (dict, list)):
                 print(json.dumps(response, indent=2, ensure_ascii=False))
             else:
                 print(response)
         except Exception:
-            # fall back to simple repr
             print(repr(response))
         return response
 
     def think(self, enabled: bool = True):
-        """Enable or disable "thinking" mode.
-
-        When enabled, calls to `process` and `generate` will include a small
-        simulated delay and a descriptive status in the returned result.
-        """
         self.think_enabled = bool(enabled)
         return self.think_enabled
 
     def note(self, text: str):
-        """Add a note to persistent memory. Useful for instructions/prompts."""
         self.notes.append(text)
         return text
 
     # --- core operations -------------------------------------------------
     def _require_key(self):
         if not self.api_key:
-            # simulate provider requiring a key; do not block local-only ops
             raise APIError("API key required for this provider operation")
 
     def _simulate_latency(self):
         if self.think_enabled:
-            # small sleep to emulate thinking; keep it short
             time.sleep(0.05 + random.random() * 0.05)
 
     def process(self, kind: str, data: Any, **kwargs) -> Dict[str, Any]:
-        """Process input data (text/image/video) and return a simulated result.
-
-        This is intentionally generic and does not call external services.
-        """
         kind = kind.lower()
-        # if provider set and operation 'heavy', require key
         if self.provider and self.provider.lower() != "local":
-            # simulate that image/video processing requires a key
             if kind in ("image", "video"):
                 self._require_key()
 
@@ -128,17 +115,14 @@ class APIClient:
             "timestamp": time.time(),
         }
 
-        # when processing text, return a simple transformation
         if kind == "text":
             text = str(data)
-            # if model hints at summarizer, produce shorter text
             if self.model and "summ" in (self.model or "").lower():
                 out = self._shorten_text(text)
             else:
                 out = text.strip() + "\n\n[processed]"
             result["output"] = out
         else:
-            # for image/video return a stub description
             result["output"] = f"<simulated {kind} processing result with size={len(str(data))}>"
 
         self.last_response = result
@@ -146,20 +130,17 @@ class APIClient:
         return result
 
     def generate(self, kind: str, prompt: Any, **kwargs) -> Dict[str, Any]:
-        """Generate content (text/image/video) based on a prompt.
-
-        This is a simulated generator. For real usage, replace body with
-        provider SDK calls.
-        """
         kind = kind.lower()
         if self.provider and self.provider.lower() != "local":
-            # require API key for generation
             self._require_key()
 
         self._simulate_latency()
 
         if kind == "text":
             out = self._generate_text_from_prompt(prompt)
+            # optional: apply temperature to simulate creativity/randomness
+            noise = int(self.temperature_value * 10)
+            out += f"\n\n[temperature={self.temperature_value}, noise={noise}]"
         elif kind == "image":
             out = f"<simulated-image size=512x512 from prompt='{prompt}'>"
         elif kind == "video":
@@ -174,6 +155,7 @@ class APIClient:
             "prompt": str(prompt),
             "output": out,
             "notes": list(self.notes),
+            "temperature": self.temperature_value,
             "timestamp": time.time(),
         }
         self.last_response = response
@@ -188,7 +170,6 @@ class APIClient:
         return s
 
     def _shorten_text(self, text: str) -> str:
-        # naive shorten: return first line or first 80 chars
         lines = text.strip().splitlines()
         if lines:
             return (lines[0][:200] + ("..." if len(lines[0]) > 200 else ""))
@@ -196,20 +177,14 @@ class APIClient:
 
     def _generate_text_from_prompt(self, prompt: Any) -> str:
         p = str(prompt).strip()
-        # echo plus a small random expansion to feel "creative"
         suffixes = ["\n\nAssistant:", "\n\nGenerated:", "\n\nResult:"]
         chosen = random.choice(suffixes)
-        body = p
-        # simple paraphrase: reverse a few words and append
         words = p.split()
-        if len(words) > 6:
-            snippet = " ".join(words[:6]) + "..."
-        else:
-            snippet = p
+        snippet = " ".join(words[:6]) + "..." if len(words) > 6 else p
         return f"{snippet}{chosen} {snippet[::-1]}"
 
 
-# singleton default client and convenience functions --------------------
+# singleton default client
 _DEFAULT = APIClient()
 
 
@@ -225,7 +200,7 @@ def API_MODEL(*, model: str):
     return _DEFAULT.set_model(model=model)
 
 
-# expose methods via a simple object for dot-syntax like the user asked
+# alias object for convenient dot syntax
 class _APIAlias:
     def fail(self, template: str, e: Optional[Exception] = None, when: str = "after"):
         return _DEFAULT.fail(template, e=e, when=when)
@@ -245,8 +220,14 @@ class _APIAlias:
     def note(self, text: str):
         return _DEFAULT.note(text)
 
+    def set_temp(self, temp: float):
+        return _DEFAULT.set_temp(temp)
 
-# instance named API for user convenience
+    def temp(self):
+        return _DEFAULT.temp()
+
+
+# instance named API for convenience
 API = _APIAlias()
 
 
