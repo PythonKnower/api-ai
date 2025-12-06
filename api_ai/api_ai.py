@@ -4,7 +4,7 @@ A tiny pure-Python DSL-style wrapper for working with AI providers.
 This module exposes a simple, stateful API object via top-level helper
 functions so you can write scripts with a compact syntax like:
 
-    from api_ai import API_PROVIDER, API_KEY, API_MODEL, API, API_TEMP
+    from api_ai import API_PROVIDER, API_KEY, API_MODEL, API
 
     API_PROVIDER(Claude/OpenAI/Google/xAI)
     API_KEY("API_KEY_HERE")
