@@ -10,7 +10,7 @@ functions so you can write scripts with a compact syntax like:
     API_KEY("API_KEY_HERE")
     API_MODEL("model")
     API.note("Type your note here to let the AI use it..")
-    resp = API.process() # could you please fix my code? I cant seem to get it right. I don't know how to use it!
+    resp = API.process()
     API.print(resp)
 
 Important: this is a pure-Python local shim and does not contact external
